@@ -20,18 +20,51 @@ class ActivityViewModel {
     }
 
 
+  
     var totalLearnedDays: Int {
-        activities.filter { activity in
-            activity.status == .learned
-        }.count
+        // Count unique learned days in the current goal.
+        let calendar = Calendar.current
+
+        guard let endDate = goalEndDate else {
+            return 0
+        }
+
+        let days = activities
+            .filter { activity in
+                activity.status == .learned &&
+                activity.date >= goalActivityCutoff &&
+                activity.date >= goalStartDate &&
+                activity.date < endDate
+            }
+            .map { calendar.startOfDay(for: $0.date) }
+
+        return Set(days).count
     }
+
     
     
+   
     var totalFrozenDays: Int {
-        activities.filter { activity in
-            activity.status == .frozen
-        }.count
+        // Count unique frozen days in the current goal.
+        let calendar = Calendar.current
+
+        guard let endDate = goalEndDate else {
+            return 0
+        }
+
+        let days = activities
+            .filter { activity in
+                activity.status == .frozen &&
+                activity.date >= goalActivityCutoff &&
+                activity.date >= goalStartDate &&
+                activity.date < endDate
+            }
+            .map { calendar.startOfDay(for: $0.date) }
+
+        return Set(days).count
     }
+
+    
     
     var weeklyFrozenDays: Int {
         // Get the current calendar week.
@@ -108,16 +141,20 @@ class ActivityViewModel {
     }
 
     
+
     func status(for date: Date) -> ActivityStatus {
-        // Find an activity that matches the given date.
-        let activity = activities.first { activity in
-            Calendar.current.isDate(
-                activity.date,
-                inSameDayAs: date
-            )
+        let calendar = Calendar.current
+
+        // Use the current goal's activity for today.
+        if calendar.isDateInToday(date) {
+            return todayStatus
         }
 
-        // Return the activity status, or .none if not found.
+        // Show the latest recorded status for historical dates.
+        let activity = activities.last { activity in
+            calendar.isDate(activity.date, inSameDayAs: date)
+        }
+
         return activity?.status ?? .none
     }
 
@@ -574,6 +611,16 @@ class ActivityViewModel {
         saveLearningSettings(goal: goal, duration: duration)
     }
 
+    var hasSavedGoal: Bool {
+        // Check whether a learning goal was previously saved.
+        guard let savedGoal = UserDefaults.standard.string(
+            forKey: "savedLearningGoal"
+        ) else {
+            return false
+        }
+
+        return isValidLearningGoal(savedGoal)
+    }
 
 }
 

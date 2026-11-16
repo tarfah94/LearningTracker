@@ -12,6 +12,7 @@ struct ContentView: View {
     )
 
     @State private var showActivity = false
+    @State private var isCreatingNewGoal = false
 
     
     var body: some View {
@@ -124,12 +125,16 @@ struct ContentView: View {
                     )
 
                     isGoalFocused = false
+                    isCreatingNewGoal = false
                     showActivity = true
                 } label: {
                     Text("Start Learning")
                 }
 
-                .padding()
+                
+                .frame(maxWidth: .infinity)
+                .frame(height: 44)
+                .padding(.horizontal, 4)
                 .background(
                     learningGoal.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                     ? Color.gray.opacity(0.3)
@@ -144,7 +149,7 @@ struct ContentView: View {
                             lineWidth: 1
                         )
                 }
-                .frame(maxWidth: .infinity)
+               
                 .disabled(
                     learningGoal.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                 )
@@ -168,14 +173,31 @@ struct ContentView: View {
             .navigationDestination(isPresented: $showActivity) {
                 ActivityView(
                     viewModel: viewModel,
+                  
                     onSetGoal: {
-                        // Return to the goal creation screen.
+                        // Keep the goal creation screen visible.
+                        isCreatingNewGoal = true
+
+                        // Return to the onboarding screen.
                         showActivity = false
                         learningGoal = ""
                         selectedDuration = "Week"
                     }
+
                 )
             }
+            
+            .onAppear {
+                // Resume a saved goal unless the user is creating a new one.
+                guard !isCreatingNewGoal else { return }
+
+                if viewModel.hasSavedGoal &&
+                   (!viewModel.hasGoalEnded ||
+                    !viewModel.hasAcknowledgedGoalResult) {
+                    showActivity = true
+                }
+            }
+
 
         } // End NavigationStack
     } // End body

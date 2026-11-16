@@ -10,10 +10,6 @@ import SwiftUI
 struct ActivityView: View {
     
     
-    @State private var showGoalResult = false
-    @Environment(\.scenePhase) private var scenePhase
-
-    
     private var weekDates: [Date] {
         let calendar = Calendar.current
         let today = Date.now
@@ -33,19 +29,19 @@ struct ActivityView: View {
     
     
     
-  
+    
     let viewModel: ActivityViewModel
-
+    
     // Callback to return to the goal creation screen.
     let onSetGoal: () -> Void
-
+    
     
     
     
     var body: some View {
         
         VStack(alignment: .leading, spacing: 12) {
-            
+                    
             HStack(spacing: 12) {
                 
                 Text("Activity")
@@ -58,9 +54,9 @@ struct ActivityView: View {
                     ActivitiesHistoryView(viewModel: viewModel)
                 } label: {
                     Image(systemName: "calendar")
-                        .font(.system(size: 18))
+                        .font(.system(size: 24))
                         .foregroundStyle(.white)
-                        .frame(width: 40, height: 40)
+                        .frame(width: 50, height: 50)
                         .glassEffect(.regular, in: Circle())
                 }
                 
@@ -81,9 +77,9 @@ struct ActivityView: View {
                     )
                 } label: {
                     Image(systemName: "pencil.and.outline")
-                        .font(.system(size: 20))
+                        .font(.system(size: 24))
                         .foregroundStyle(.white)
-                        .frame(width: 40, height: 40)
+                        .frame(width: 50, height: 50)
                         .glassEffect(.regular, in: Circle())
                 }
             }
@@ -171,49 +167,26 @@ struct ActivityView: View {
                         // Use "day" for one day and "days" for all other counts.
                         "\(viewModel.totalLearnedDays) \(viewModel.totalLearnedDays == 1 ? "day" : "days")"
                     )
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.system(size: 18, weight: .semibold))
                     
                     
                     // Display the card title.
                     Text("Learned")
                         .font(.system(size: 14))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.primary)
                     
                 }
                 
                 
                 .frame(maxWidth: .infinity)
-                .frame(height: 100) // Keep the card height consistent.
-                .background {
-                    RoundedRectangle(cornerRadius: 24)
-                    // Create a subtle dark glass-like gradient.
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color(white: 0.16),
-                                    Color(white: 0.10)
-                                ],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                }
+                .frame(height: 105) // Keep the card height consistent.
+                .glassEffect(
+                    .regular,
+                    in: RoundedRectangle(cornerRadius: 24)
+                )
+
                 
-                .overlay {
-                    RoundedRectangle(cornerRadius: 24)
-                    // Add a soft highlight to the card border.
-                        .strokeBorder(
-                            LinearGradient(
-                                colors: [
-                                    Color.white.opacity(0.35),
-                                    Color.white.opacity(0.08)
-                                ],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            ),
-                            lineWidth: 1
-                        )
-                }
+                
                 
                 
                 VStack(spacing: 8) {
@@ -234,40 +207,40 @@ struct ActivityView: View {
                     // Display the card title.
                     Text("Freezed")
                         .font(.system(size: 14))
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.primary)
                     
                 }
                 
                 .frame(maxWidth: .infinity)
-                .frame(height: 100) // Keep the card height consistent.
-                
-                .background {
-                    RoundedRectangle(cornerRadius: 24)
-                    // Create a dark glass-like surface.
-                        .fill(Color(white: 0.11))
-                }
-                .overlay {
-                    RoundedRectangle(cornerRadius: 24)
-                    // Add a soft highlight to the card border.
-                        .strokeBorder(
-                            LinearGradient(
-                                colors: [
-                                    Color.white.opacity(0.35),
-                                    Color.white.opacity(0.08)
-                                ],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            ),
-                            lineWidth: 1
-                        )
-                }
-                
+                .frame(height: 105) // Keep the card height consistent.
+              
+                .glassEffect(
+                    .regular,
+                    in: RoundedRectangle(cornerRadius: 24)
+                )
+
                 
             }
             
             .padding(.top, 20) // Add space above the statistics cards.
             
             .padding(.bottom, 16) // Add space below both statistics cards.
+            
+            
+            
+            if viewModel.hasGoalEnded {
+                
+                // Replace activity controls with the goal result.
+                GoalResultView(
+                    result: viewModel.goalResult,
+                    message: viewModel.goalResultMessage,
+                    onSetGoal: {
+                        viewModel.acknowledgeGoalResult()
+                        onSetGoal()
+                    }
+                )
+                
+            } else {
             
             // Log as Learned button
             Button {
@@ -289,8 +262,8 @@ struct ActivityView: View {
                 ? Color.gray
                 : Color.white
             )
-            
-            .frame(width: 260, height: 260)
+            .font(.system(size: 18 , weight: .semibold))
+            .frame(width: 280, height: 280)
             
             .background {
                 Circle()
@@ -305,24 +278,16 @@ struct ActivityView: View {
                     .overlay {
                         Circle()
                             .strokeBorder(
-                                LinearGradient(
-                                    colors: [
-                                        Color.white.opacity(0.3),
-                                        Color.white.opacity(0.05)
-                                    ],
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                ),
-                                lineWidth: 1.5
-                            )
-                    }
+                                Color.white.opacity(0.22),
+                                lineWidth: 1
+                            )                    }
             }
-         
+            
             .disabled(
                 viewModel.hasGoalEnded ||
                 viewModel.todayStatus == .frozen
             )
-
+            
             
             .frame(maxWidth: .infinity)
             .padding(.top, 16)
@@ -332,148 +297,95 @@ struct ActivityView: View {
                 .frame(height: 12)
             
             // Freeze button
-            
-            
-            Button {
-                viewModel.freezeToday()
-            } label: {
-                
-                Text(
-                    // Show the completed label only when today is frozen.
-                    viewModel.todayStatus == .frozen
-                    ? "Frozen for a Day"
-                    : "Freeze for a Day"
-                )
-            }
-            
-            .frame(maxWidth: .infinity)
-            .frame(height: 36)
-            // Add a subtle glass effect while keeping the capsule shape.
-            .glassEffect(.regular, in: Capsule())
-            
-            .background {
-                Capsule()
-                    .fill(
-                        viewModel.hasGoalEnded ||
-                        (
-                            viewModel.todayStatus == .none &&
-                            viewModel.usedFreezes >= viewModel.maxFreezes
-                        )
-                            ? Color(white: 0.11)
-                            : Color.cyan
-
-
-                        
+        
+                Button {
+                    viewModel.freezeToday()
+                } label: {
+                   
+                    Text(
+                        viewModel.todayStatus == .frozen
+                            ? "Frozen for a Day"
+                            : "Freeze for a Day"
                     )
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundStyle(
+                        viewModel.todayStatus == .frozen
+                            ? Color(red: 0.60, green: 0.60, blue: 0.60)
+                            : Color.white
+                    )
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 42)
+                    .background {
+                        Capsule()
+                            .fill(
+                                viewModel.todayStatus == .frozen
+                                    ? Color(red: 0.15, green: 0.15, blue: 0.15)
+                                    : Color(
+                                        red: 60 / 255,
+                                        green: 211 / 255,
+                                        blue: 254 / 255
+                                    )
+                            )
+                    }
+                    
                     .overlay {
+                        // Add a subtle highlight around the capsule.
                         Capsule()
                             .strokeBorder(
-                                Color.white.opacity(0.3),
+                                Color.white.opacity(0.22),
                                 lineWidth: 1
                             )
                     }
-            }
-            .padding(.horizontal, 16)
-            
-            
-            .foregroundStyle(
-               
-                
-                viewModel.hasGoalEnded ||
-                (
-                    viewModel.todayStatus == .none &&
-                    viewModel.usedFreezes >= viewModel.maxFreezes
-                )
-                    ? Color.gray
-                    : Color.white
 
 
-            )
-            
-            
-            
-            
-            .clipShape(Capsule())
-            .frame(maxWidth: .infinity)
-            .frame(height: 36)
-            .padding(.horizontal, 24)
-          
-            .disabled(
-                viewModel.hasGoalEnded ||
-                viewModel.todayStatus == .learned ||
-                (
-                    viewModel.todayStatus == .none &&
-                    viewModel.usedFreezes >= viewModel.maxFreezes
-                )
-            )
-
-            
-            
-            
-            Text("\(viewModel.usedFreezes) out of \(viewModel.maxFreezes) Freezes used")
-            // Show freezes used within the selected time period.
-                .font(.system(size: 12))
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity)
-            
-            
-            Spacer()
-            
-            
-        }
-        .frame(maxWidth: .infinity,
-               maxHeight: .infinity,
-               alignment: .topLeading)
-        .padding(.horizontal, 20)
-        .padding(.top, 12)
-        
-        // Hide the default navigation back button
-        // to match the Sketch design.
-        .navigationBarBackButtonHidden(true)
-        .sheet(isPresented: $showGoalResult) {
-            GoalResultView(
-                result: viewModel.goalResult,
-                message: viewModel.goalResultMessage,
-
-                onSetGoal: {
-                    // Save that the user has viewed the goal result.
-                    viewModel.acknowledgeGoalResult()
-
-                    // Dismiss the result screen.
-                    showGoalResult = false
                 }
+                .padding(.horizontal, 32)
+                .allowsHitTesting(
+                    !viewModel.hasGoalEnded &&
+                    viewModel.todayStatus != .learned &&
+                    (
+                        viewModel.todayStatus == .frozen ||
+                        viewModel.usedFreezes < viewModel.maxFreezes
+                    )
+                )
+
+
+
+
+            
+            
+        
+                Text("\(viewModel.usedFreezes) out of \(viewModel.maxFreezes) Freezes used")
+                    .font(.system(size: 12))
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity)
+
+                Spacer()
+
+                } // End else: active goal controls
+
+            } // End main VStack
+            .frame(
+                maxWidth: .infinity,
+                maxHeight: .infinity,
+                alignment: .topLeading
             )
-        }
-        
-        .onAppear {
-            // Check whether the goal result should be displayed.
-            showGoalResult = viewModel.shouldShowGoalResult
-        }
-        
-        
-        .onChange(of: scenePhase) { _, newPhase in
-            // Check the goal result when the app becomes active.
-            if newPhase == .active {
-                showGoalResult = viewModel.shouldShowGoalResult
+            .padding(.horizontal, 20)
+            .padding(.top, 12)
+            .navigationBarBackButtonHidden(true)
+
+        } // End body
+    } // End ActivityView
+
+    #Preview {
+        ActivityView(
+            viewModel: ActivityViewModel(
+                learningGoal: "Swift",
+                selectedDuration: "Week"
+            ),
+            onSetGoal: {
+                // Preview-only action.
             }
-        }
-
-
+        )
+        .preferredColorScheme(.dark)
     }
-}
-
-
-#Preview {
-    ActivityView(
-        viewModel: ActivityViewModel(
-            learningGoal: "Swift",
-            selectedDuration: "Week"
-        ),
-        onSetGoal: {
-            // Preview-only action.
-        }
-    )
-    .preferredColorScheme(.dark)
-}
-
-

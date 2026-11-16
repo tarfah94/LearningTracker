@@ -1,72 +1,85 @@
-//
-//  GoalResultView.swift
-//  LearningTracker
-//
-//  Created by Tarfah Alsaleh on 05/06/1448 AH.
-//
-
 
 import SwiftUI
 
 struct GoalResultView: View {
 
-    // Receive the goal result from the ViewModel.
     let result: GoalResult
-
-    // Receive the result message prepared by the ViewModel.
-   let message: String
-
-    // Notify the parent when the user wants to set a new goal.
+    let message: String
     let onSetGoal: () -> Void
 
-    
-    var body: some View {
-        ZStack {
-            // Match the dark background from Sketch.
-            Color.black.ignoresSafeArea()
-
-            VStack {
-                // Temporary title to verify the new screen.
-                
-                Text(message)
-                    // Display the message provided by the ViewModel.
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundStyle(.white)
-                    .multilineTextAlignment(.center)
-                
-                
-                Button {
-                    // Request the new goal flow from the parent.
-                    onSetGoal()
-                } label: {
-                    Text("Set a goal")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 48)
-                        .background(Color.orange, in: Capsule())
-                }
-                .padding(.horizontal, 32)
-                .padding(.top, 24)
-
-
-
-            }
+    // Presentation details for the result.
+    private var resultIcon: String {
+        switch result {
+        case .completed:
+            return "hands.clap.fill"
+        case .notMet:
+            return "xmark.seal.fill"
+        case .inProgress:
+            return ""
         }
+    }
+
+    private var resultColor: Color {
+        result == .completed ? .yellow : .orange
+    }
+
+    private var subtitle: String {
+        switch result {
+        case .completed:
+            return "Ready for your next goal?"
+        case .notMet:
+            return "Want to set another goal?"
+        case .inProgress:
+            return ""
+        }
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+
+            Spacer(minLength: 32)
+
+            // Display the result icon.
+            Image(systemName: resultIcon)
+                .font(.system(size: 46, weight: .medium))
+                .foregroundStyle(resultColor)
+
+            // Display the message from the ViewModel.
+            Text(message)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(.white)
+                .multilineTextAlignment(.center)
+                .padding(.top, 18)
+
+            Text(subtitle)
+                .font(.system(size: 14))
+                .foregroundStyle(.gray)
+                .multilineTextAlignment(.center)
+                .padding(.top, 6)
+
+            Button {
+                onSetGoal()
+            } label: {
+                Label("Set a goal", systemImage: "pencil.circle")
+                    .font(.system(size: 16))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 22)
+                    .frame(height: 48)
+                    .background(Color.orange, in: Capsule())
+            }
+            .padding(.top, 68)
+
+            Spacer(minLength: 80)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
-
-
 #Preview {
-    // Preview the completed state without changing app data.
     GoalResultView(
         result: .completed,
         message: "Well done!",
-        onSetGoal: {
-            // Preview action only.
-        }
+        onSetGoal: {}
     )
+    .preferredColorScheme(.dark)
 }
-
-
