@@ -1,7 +1,11 @@
 
 <div align="center">
 
-<img src="images/app-icon.png" alt="LearningTracker App Icon" width="115">
+
+<img src="LearningTracker/Assets.xcassets/app-icon.imageset/app-icon.png"
+     alt="LearningTracker App Icon"
+     width="115">
+
 
 # LearningTracker
 
@@ -16,7 +20,11 @@ LearningTracker is a native iOS app designed to help users build consistent lear
 ## App Preview
 
 <div align="center">
-  <img src="images/app-showcase.png" alt="LearningTracker App Screenshots" width="850">
+  
+<img src="LearningTracker/Assets.xcassets/app-showcase.imageset/app-showcase.png"
+     alt="LearningTracker App Screenshots"
+     width="850">
+
 </div>
 
 ## Key Features
