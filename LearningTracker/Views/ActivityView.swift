@@ -10,25 +10,7 @@ import SwiftUI
 struct ActivityView: View {
     
     @Environment(\.colorScheme) private var colorScheme
-    private var weekDates: [Date] {
-        let calendar = Calendar.current
-        let today = Date.now
-        
-        let weekday = calendar.component(.weekday, from: today)
-        
-        let sunday = calendar.date(
-            byAdding: .day,
-            value: 1 - weekday,
-            to: calendar.startOfDay(for: today)
-        ) ?? today
-        
-        return (0..<7).compactMap { index in
-            calendar.date(byAdding: .day, value: index, to: sunday)
-        }
-    }
-    
-    
-    
+
     
     let viewModel: ActivityViewModel
     
@@ -120,7 +102,7 @@ struct ActivityView: View {
                 .foregroundStyle(.secondary)
             
             HStack(spacing: 0) {
-                ForEach(weekDates, id: \.self) { date in
+                ForEach(viewModel.weekDates, id: \.self) { date in
                     let state = viewModel.calendarState(for: date)
 
                     VStack(spacing: 4) {
@@ -330,12 +312,19 @@ struct ActivityView: View {
                 }
                 .padding(.horizontal, 32)
                 
-                .allowsHitTesting(
-                    !viewModel.hasGoalEnded &&
+              
+                .disabled(
+                    viewModel.hasGoalEnded ||
                     (
-                        viewModel.todayStatus == .frozen ||
-                        viewModel.usedFreezes < viewModel.maxFreezes
+                        viewModel.todayStatus != .frozen &&
+                        viewModel.usedFreezes >= viewModel.maxFreezes
                     )
+                )
+                .opacity(
+                    viewModel.todayStatus != .frozen &&
+                    viewModel.usedFreezes >= viewModel.maxFreezes
+                        ? 0.45
+                        : 1.0
                 )
 
 
@@ -379,3 +368,4 @@ struct ActivityView: View {
         )
         .preferredColorScheme(.dark)
     }
+

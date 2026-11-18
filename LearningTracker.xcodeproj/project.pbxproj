@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		196175BF30A1A50000C24562 /* LearningTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LearningTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		196175BF30A1A50000C24562 /* Learning Journey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Learning Journey.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1961764F30ADA6DA00C24562 /* Learning-Journey-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Learning-Journey-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -30,6 +31,7 @@
 		196175B630A1A50000C24562 = {
 			isa = PBXGroup;
 			children = (
+				1961764F30ADA6DA00C24562 /* Learning-Journey-Info.plist */,
 				196175C130A1A50000C24562 /* LearningTracker */,
 				196175C030A1A50000C24562 /* Products */,
 			);
@@ -38,7 +40,7 @@
 		196175C030A1A50000C24562 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				196175BF30A1A50000C24562 /* LearningTracker.app */,
+				196175BF30A1A50000C24562 /* Learning Journey.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -46,9 +48,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		196175BE30A1A50000C24562 /* LearningTracker */ = {
+		196175BE30A1A50000C24562 /* Learning Journey */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 196175CA30A1A50100C24562 /* Build configuration list for PBXNativeTarget "LearningTracker" */;
+			buildConfigurationList = 196175CA30A1A50100C24562 /* Build configuration list for PBXNativeTarget "Learning Journey" */;
 			buildPhases = (
 				196175BB30A1A50000C24562 /* Sources */,
 				196175BC30A1A50000C24562 /* Frameworks */,
@@ -59,9 +61,9 @@
 			fileSystemSynchronizedGroups = (
 				196175C130A1A50000C24562 /* LearningTracker */,
 			);
-			name = LearningTracker;
+			name = "Learning Journey";
 			productName = LearningTracker;
-			productReference = 196175BF30A1A50000C24562 /* LearningTracker.app */;
+			productReference = 196175BF30A1A50000C24562 /* Learning Journey.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -93,7 +95,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				196175BE30A1A50000C24562 /* LearningTracker */,
+				196175BE30A1A50000C24562 /* Learning Journey */,
 			);
 		};
 /* End PBXProject section */
@@ -234,15 +236,19 @@
 			};
 			name = Release;
 		};
-		196175CB30A1A50100C24562 /* Debug configuration for PBXNativeTarget "LearningTracker" */ = {
+		196175CB30A1A50100C24562 /* Debug configuration for PBXNativeTarget "Learning Journey" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = LJ_Icon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5399UN2YWC;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Learning-Journey-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Learning Journey";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -265,15 +271,19 @@
 			};
 			name = Debug;
 		};
-		196175CC30A1A50100C24562 /* Release configuration for PBXNativeTarget "LearningTracker" */ = {
+		196175CC30A1A50100C24562 /* Release configuration for PBXNativeTarget "Learning Journey" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = LJ_Icon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5399UN2YWC;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Learning-Journey-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Learning Journey";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -307,11 +317,11 @@
 			);
 			defaultConfigurationName = Release;
 		};
-		196175CA30A1A50100C24562 /* Build configuration list for PBXNativeTarget "LearningTracker" */ = {
+		196175CA30A1A50100C24562 /* Build configuration list for PBXNativeTarget "Learning Journey" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				196175CB30A1A50100C24562 /* Debug configuration for PBXNativeTarget "LearningTracker" */,
-				196175CC30A1A50100C24562 /* Release configuration for PBXNativeTarget "LearningTracker" */,
+				196175CB30A1A50100C24562 /* Debug configuration for PBXNativeTarget "Learning Journey" */,
+				196175CC30A1A50100C24562 /* Release configuration for PBXNativeTarget "Learning Journey" */,
 			);
 			defaultConfigurationName = Release;
 		};

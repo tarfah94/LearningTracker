@@ -20,6 +20,85 @@ class ActivityViewModel {
     }
 
 
+    var weekDates: [Date] {
+        let calendar = Calendar.current
+        let today = Date.now
+
+        // Find the first day of the current week (Sunday).
+        let weekday = calendar.component(.weekday, from: today)
+
+        let sunday = calendar.date(
+            byAdding: .day,
+            value: 1 - weekday,
+            to: calendar.startOfDay(for: today)
+        ) ?? today
+
+        // Generate the seven dates from Sunday to Saturday.
+        return (0..<7).compactMap { index in
+            calendar.date(byAdding: .day, value: index, to: sunday)
+        }
+    }
+
+    
+    var currentStreak: Int {
+        guard let endDate = goalEndDate else { return 0 }
+
+        // Include activities from the current goal only.
+        let records = activities.filter { activity in
+            activity.date >= goalActivityCutoff &&
+            activity.date >= goalStartDate &&
+            activity.date < endDate &&
+            (activity.status == .learned || activity.status == .frozen)
+        }
+
+        return calculateStreak(from: records, at: Date.now)
+    }
+
+    private func calculateStreak(
+        from records: [DayActivity],
+        at now: Date
+    ) -> Int {
+        let gracePeriod: TimeInterval = 32 * 60 * 60
+        let sorted = records.sorted { $0.date > $1.date }
+
+        guard let latest = sorted.first,
+              now.timeIntervalSince(latest.date) <= gracePeriod
+        else {
+            return 0
+        }
+
+        var streak = 0
+        var previousDate = now
+        var countedDays = Set<Date>()
+
+        for activity in sorted {
+            let elapsed = previousDate.timeIntervalSince(activity.date)
+
+            // Stop when the time gap is greater than 32 hours.
+            if elapsed > gracePeriod {
+                break
+            }
+
+            let day = Calendar.current.startOfDay(for: activity.date)
+
+            if !countedDays.contains(day) {
+                // Frozen days preserve the streak.
+                if activity.status == .learned {
+                    streak += 1
+                }
+                countedDays.insert(day)
+            }
+
+            previousDate = activity.date
+        }
+
+        return streak
+    }
+
+    
+    
+
+
   
     var totalLearnedDays: Int {
         // Count unique learned days in the current goal.
@@ -239,33 +318,31 @@ class ActivityViewModel {
 
     }
 
+    
     func freezeToday() {
-        // Do not modify activities after the goal ends.
+        // Prevent changes after the goal ends.
         guard !hasGoalEnded else { return }
 
+        // Tapping Freeze again removes today's selection.
         if todayStatus == .frozen {
-            activities.removeAll { activity in
-                // Remove only today's freeze from the current goal.
-                activity.date >= goalActivityCutoff &&
-                Calendar.current.isDateInToday(activity.date) &&
-                activity.status == .frozen
-            }
-
-
-
-        } else if todayStatus == .none && usedFreezes < maxFreezes {
-            // Use one available freeze.
-            activities.append(
-                DayActivity(date: Date.now, status: .frozen)
-            )
-        } else {
-            // Prevent freezing when the day is learned
-            // or the allowance is exhausted.
+            removeTodayActivity()
+            saveActivities()
             return
         }
 
+        // A new freeze requires an available allowance.
+        guard usedFreezes < maxFreezes else { return }
+
+        // Replace Learned with Frozen in a single action.
+        removeTodayActivity()
+
+        activities.append(
+            DayActivity(date: Date.now, status: .frozen)
+        )
+
         saveActivities()
     }
+
 
 
 
@@ -314,34 +391,38 @@ class ActivityViewModel {
     }
 
 
-
     func logLearning() {
-        // Do not modify activities after the goal ends.
+        // Prevent changes after the goal ends.
         guard !hasGoalEnded else { return }
 
+        // Tapping Learned again removes today's selection.
         if todayStatus == .learned {
-            activities.removeAll { activity in
-                // Remove only today's learned activity from the current goal.
-                activity.date >= goalActivityCutoff &&
-                Calendar.current.isDateInToday(activity.date) &&
-                activity.status == .learned
-            }
-
-        } else if todayStatus == .none {
-            // Record learning when today has no activity.
-            activities.append(
-                DayActivity(date: Date.now, status: .learned)
-            )
-        } else {
-            // Do not overwrite an existing freeze.
+            removeTodayActivity()
+            saveActivities()
             return
         }
+
+        // Replace Frozen with Learned in a single action.
+        removeTodayActivity()
+
+        activities.append(
+            DayActivity(date: Date.now, status: .learned)
+        )
 
         saveActivities()
     }
 
 
   
+    private func removeTodayActivity() {
+        // Remove today's activity from the current goal only.
+        // Preserve previous goals and historical activities.
+        activities.removeAll { activity in
+            activity.date >= goalActivityCutoff &&
+            Calendar.current.isDateInToday(activity.date)
+        }
+    }
+
     
 
  
@@ -620,6 +701,31 @@ class ActivityViewModel {
         }
 
         return isValidLearningGoal(savedGoal)
+    }
+
+    
+    
+    enum CalendarDayState {
+        case today
+        case learned
+        case frozen
+        case normal
+    }
+
+    // Determine the calendar state for a given date.
+    func calendarState(for date: Date) -> CalendarDayState {
+        let status = status(for: date)
+
+        switch status {
+        case .learned:
+            return .learned
+        case .frozen:
+            return .frozen
+        default:
+            return Calendar.current.isDateInToday(date)
+                ? .today
+                : .normal
+        }
     }
 
 }
