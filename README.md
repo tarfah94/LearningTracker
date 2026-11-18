@@ -22,11 +22,12 @@ LearningTracker is a native iOS app designed to help users build consistent lear
 
 <div align="center">
 
-<img src="LearningTracker/Assets.xcassets/readme-v3.imageset/readme-v3.png"
+<img src="LearningTracker/readme-v3.png"
      alt="Learning Journey App Screenshots"
      width="850">
 
 </div>
+
 
 
 ## Key Features
